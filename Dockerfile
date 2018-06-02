@@ -1,12 +1,30 @@
 FROM postgres:9.5.10
 
-RUN apt-get update
+ARG DEBIAN_FRONTEND="noninteractive"
+RUN apt-get update \
+ && apt-get -y -q install \
+   git-core \
+   build-essential \
+   libxml2-dev \
+   libpq-dev \
+   libexpat1-dev \
+   libdb-dev \
+   libicu-dev \
+   postgresql-server-dev-9.5 \
+   wget
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y -q install git-core build-essential libxml2-dev libpq-dev libexpat1-dev libdb-dev libicu-dev postgresql-server-dev-9.5 wget
-
-RUN git clone https://github.com/metabrainz/postgresql-musicbrainz-unaccent.git && git clone https://github.com/metabrainz/postgresql-musicbrainz-collate.git
-
-RUN cd postgresql-musicbrainz-unaccent && make && make install && cd ../postgresql-musicbrainz-collate && make && make install && cd ../
+# pull musicbrainz postgres extensions from git & install them
+RUN git clone https://github.com/metabrainz/postgresql-musicbrainz-unaccent.git \
+ && git clone https://github.com/metabrainz/postgresql-musicbrainz-collate.git \
+ && cd postgresql-musicbrainz-unaccent \
+ && make \
+ && make install \
+ && cd ../postgresql-musicbrainz-collate \
+ && make \
+ && make install \
+ && cd ../ \
+ && rm -R postgresql-musicbrainz-unaccent \
+ && rm -R postgresql-musicbrainz-collate
 
 RUN echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
 
