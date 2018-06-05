@@ -26,6 +26,7 @@ RUN git clone https://github.com/metabrainz/postgresql-musicbrainz-unaccent.git 
  && rm -R postgresql-musicbrainz-unaccent \
  && rm -R postgresql-musicbrainz-collate
 
-RUN echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
+RUN echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf \
+ && echo "shared_buffers = 512MB" >> /var/lib/postgresql/data/postgresql.conf
 
 ADD create-database.sh /create-database.sh
