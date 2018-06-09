@@ -9,11 +9,11 @@ chmod 0600 ~/.pgpass
 
 psql -h postgresql -d musicbrainz -U $POSTGRES_USER -a -c "CREATE SCHEMA musicbrainz"
 
-wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/master/admin/sql/Extensions.sql
+wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/production/admin/sql/Extensions.sql
 psql -h postgresql -d musicbrainz -U $POSTGRES_USER -a -f Extensions.sql
 rm Extensions.sql
 
-wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/master/admin/sql/CreateTables.sql
+wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/production/admin/sql/CreateTables.sql
 psql -h postgresql -d musicbrainz -U $POSTGRES_USER -a -f CreateTables.sql
 rm CreateTables.sql
 
@@ -43,10 +43,10 @@ rm -rf mbdump
 
 echo "Creating Indexes and Primary Keys"
 
-wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/master/admin/sql/CreatePrimaryKeys.sql
+wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/production/admin/sql/CreatePrimaryKeys.sql
 psql -h postgresql -d musicbrainz -U $POSTGRES_USER -a -f CreatePrimaryKeys.sql
 rm CreatePrimaryKeys.sql
 
-wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/master/admin/sql/CreateIndexes.sql
+wget https://raw.githubusercontent.com/metabrainz/musicbrainz-server/production/admin/sql/CreateIndexes.sql
 psql -h postgresql -d musicbrainz -U $POSTGRES_USER -a -f CreateIndexes.sql
 rm CreateIndexes.sql
