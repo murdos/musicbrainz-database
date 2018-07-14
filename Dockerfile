@@ -1,4 +1,4 @@
-FROM postgres:9.5.10
+FROM postgres:9.5
 
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
@@ -28,5 +28,7 @@ RUN git clone https://github.com/metabrainz/postgresql-musicbrainz-unaccent.git 
 
 RUN echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf \
  && echo "shared_buffers = 512MB" >> /var/lib/postgresql/data/postgresql.conf
+
+ENV POSTGRES_USER musicbrainz
 
 COPY create-database.sh /create-database.sh
