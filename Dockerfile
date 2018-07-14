@@ -1,4 +1,4 @@
-FROM postgres:9.5
+FROM postgres:9.5 as build-env
 
 ARG DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
@@ -10,25 +10,28 @@ RUN apt-get update \
    libexpat1-dev \
    libdb-dev \
    libicu-dev \
-   postgresql-server-dev-9.5 \
+   postgresql-server-dev-$PG_MAJOR \
    wget
 
 # pull musicbrainz postgres extensions from git & install them
 RUN git clone https://github.com/metabrainz/postgresql-musicbrainz-unaccent.git \
- && git clone https://github.com/metabrainz/postgresql-musicbrainz-collate.git \
  && cd postgresql-musicbrainz-unaccent \
  && make \
- && make install \
- && cd ../postgresql-musicbrainz-collate \
+ && make install
+
+RUN git clone https://github.com/metabrainz/postgresql-musicbrainz-collate.git \
+ && cd postgresql-musicbrainz-collate \
  && make \
- && make install \
- && cd ../ \
- && rm -R postgresql-musicbrainz-unaccent \
- && rm -R postgresql-musicbrainz-collate
+ && make install
+
+
+FROM postgres:9.5
+
+COPY --from=build-env /usr/lib/postgresql/$PG_MAJOR/lib/musicbrainz_* /usr/lib/postgresql/$PG_MAJOR/lib/
+COPY --from=build-env /usr/share/postgresql/$PG_MAJOR/extension/musicbrainz_* /usr/share/postgresql/$PG_MAJOR/extension/
+COPY --from=build-env /usr/share/doc/postgresql-doc-$PG_MAJOR/extension/README.musicbrainz_* /usr/share/doc/postgresql-doc-$PG_MAJOR/extension/
 
 RUN echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf \
  && echo "shared_buffers = 512MB" >> /var/lib/postgresql/data/postgresql.conf
 
 ENV POSTGRES_USER musicbrainz
-
-COPY create-database.sh /create-database.sh
